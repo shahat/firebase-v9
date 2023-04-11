@@ -2,10 +2,13 @@ import { initializeApp } from "firebase/app";
 import {
   getFirestore,
   collection,
-  getDocs,
+  onSnapshot,
   addDoc,
   deleteDoc,
   doc,
+  query,
+  where,
+  orderBy,
 } from "firebase/firestore";
 
 const firebaseConfig = {
@@ -40,18 +43,20 @@ const db = getFirestore();
 
 // collection ref
 const colRef = collection(db, "books");
+const q = query(
+  colRef,
+  where("author", "=", "mohamed"),
+  orderBy("title", "desc")
+);
 // get collection data
-getDocs(colRef)
-  .then((snapshot) => {
-    let books = [];
-    snapshot.docs.forEach((doc) => {
-      books.push({ ...doc.data(), id: doc.id });
-    });
-    console.log(books);
-  })
-  .catch((err) => {
-    console.log(err.message);
+
+onSnapshot(colRef, (snapshot) => {
+  let books = [];
+  snapshot.docs.forEach((doc) => {
+    books.push({ ...doc.data(), id: doc.id });
   });
+  console.log(books);
+});
 
 // adding docs
 const addBookForm = document.querySelector(".add");
